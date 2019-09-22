@@ -3,6 +3,9 @@
 var OBJECTS_COUNT = 8;
 var PIN_WIDTH = 50;
 var PIN_HEIGHT = 70;
+var ARRAY_TYPES = ['palace', 'flat', 'house', 'bungalo'];
+var ARRAY_TIMES = ['12:00', '13:00', '14:00'];
+var ARRAY_FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
 
 var mapBlock = document.querySelector('.map');
 mapBlock.classList.remove('map--faded');
@@ -25,41 +28,40 @@ var generateFeatureArray = function (arr) {
 var generatePhotoArray = function () {
   var photoArray = [];
   var lengthPhotoArray = getRandomCount(1, 10);
-  var templateLinkUrl = ['http://o0.github.io/assets/images/tokyo/hotel'];
-  var templateLinkType = ['.jpg'];
-  var count = 1;
-  for (var i = 0; i < lengthPhotoArray; i++) {
-    photoArray[i] = templateLinkUrl[0] + count + templateLinkType[0];
-    count += 1;
+  var templateLinkUrl = 'http://o0.github.io/assets/images/tokyo/hotel';
+  var templateLinkType = '.jpg';
+  for (var i = 1; i <= lengthPhotoArray; i++) {
+    photoArray.push(templateLinkUrl + i + templateLinkType);
   }
   return photoArray;
 };
 
 var generateObjectsList = function () {
   var objects = [];
-  var types = ['palace', 'flat', 'house', 'bungalo'];
-  var times = ['12:00', '13:00', '14:00'];
-  var features = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
-  var count = 0;
-  for (var i = 0; i < OBJECTS_COUNT; i++) {
-    count += 1;
-    objects[i] = {};
-    objects[i].author = {};
-    objects[i].author.avatar = 'img/avatars/user0' + count + '.png';
-    objects[i].offer = {};
-    objects[i].offer.title = 'Заголовок 0' + count;
-    objects[i].offer.price = getRandomCount(1000, 5000);
-    objects[i].offer.type = types[getRandomCount(0, types.length - 1)];
-    objects[i].offer.rooms = getRandomCount(1, 5);
-    objects[i].offer.guests = getRandomCount(1, 7);
-    objects[i].offer.checkin = times[getRandomCount(0, times.length - 1)];
-    objects[i].offer.checkout = times[getRandomCount(0, times.length - 1)];
-    objects[i].offer.features = generateFeatureArray(features);
-    objects[i].offer.description = 'Описание для 0' + count;
-    objects[i].offer.photos = generatePhotoArray();
-    objects[i].location = {};
-    objects[i].location.x = getRandomCount(PIN_WIDTH / 2, pinsBlockWidth - (PIN_WIDTH / 2));
-    objects[i].location.y = getRandomCount(130 + PIN_HEIGHT, 630);
+  for (var i = 1; i <= OBJECTS_COUNT; i++) {
+    objects.push({
+      'author': {
+        'avatar': 'img/avatars/user0' + i + '.png',
+      },
+      'location': {
+        'x': getRandomCount(PIN_WIDTH / 2, pinsBlockWidth - (PIN_WIDTH / 2)),
+        'y': getRandomCount(130 + PIN_HEIGHT, 630),
+      },
+      'offer': {
+        'title': 'Заголовок 0' + i,
+        'price': getRandomCount(1000, 5000),
+        'address': '',
+        'type': ARRAY_TYPES[getRandomCount(0, ARRAY_TYPES.length - 1)],
+        'rooms': getRandomCount(1, 5),
+        'guests': getRandomCount(1, 7),
+        'checkin': ARRAY_TIMES[getRandomCount(0, ARRAY_TIMES.length - 1)],
+        'checkout': ARRAY_TIMES[getRandomCount(0, ARRAY_TIMES.length - 1)],
+        'features': generateFeatureArray(ARRAY_FEATURES),
+        'description': 'Описание для 0' + i,
+        'photos': generatePhotoArray(),
+      },
+    });
+    objects[objects.length - 1].offer.address = objects[objects.length - 1].location.x + ', ' + objects[objects.length - 1].location.y;
   }
   return objects;
 };
@@ -71,10 +73,12 @@ var getObjectsList = function (arr) {
     var objectNode = objectTemplate.cloneNode(true);
     var coordX = arr[i].location.x - (PIN_WIDTH / 2);
     var coordY = arr[i].location.y - PIN_HEIGHT;
-    objectNode.querySelector('.map__pin').setAttribute('style', 'left: ' + coordX + 'px; top: ' + coordY + 'px;');
+    var pinElement = objectNode.querySelector('.map__pin');
+    pinElement.style.left = coordX + 'px';
+    pinElement.style.top = coordY + 'px';
     var image = objectNode.querySelector('img');
-    image.setAttribute('src', arr[i].author.avatar);
-    image.setAttribute('alt', arr[i].offer.title);
+    image.src = arr[i].author.avatar;
+    image.alt = arr[i].offer.title;
     fragment.appendChild(objectNode);
   }
   return fragment;
