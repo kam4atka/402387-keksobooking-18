@@ -11,6 +11,7 @@ var mapBlock = document.querySelector('.map');
 mapBlock.classList.remove('map--faded');
 var pinsBlock = mapBlock.querySelector('.map__pins');
 var pinsBlockWidth = pinsBlock.offsetWidth;
+var mapFilters = document.querySelector('.map__filters-container');
 
 var getRandomCount = function (min, max) {
   return Math.ceil(Math.random() * (max - min) + min);
@@ -84,4 +85,39 @@ var getObjectsList = function (arr) {
   return fragment;
 };
 
-pinsBlock.appendChild(getObjectsList(generateObjectsList()));
+var insertPhoto = function (parent, arr) {
+  if (parent.children.length > 0) {
+    var photo = parent.querySelector('.popup__photo');
+    photo.src = arr[0];
+    if (arr.length === 1) {
+      return;
+    }
+    for (var i = 1; i < arr.length; i++) {
+      var photoNode = photo.cloneNode(true);
+      photoNode.src = arr[i];
+      parent.appendChild(photoNode);
+    }
+  }
+};
+
+var getCardModal = function (arr, num) {
+  var fragment = document.createDocumentFragment();
+  var cardTemplate = document.querySelector('#card').content;
+  var cardNode = cardTemplate.cloneNode(true);
+  cardNode.querySelector('.popup__title').textContent = arr[num].offer.title;
+  cardNode.querySelector('.popup__text--address').textContent = arr[num].offer.address;
+  cardNode.querySelector('.popup__text--price').textContent = arr[num].offer.price + ' ₽/ночь';
+  cardNode.querySelector('.popup__type').textContent = arr[num].offer.type;
+  cardNode.querySelector('.popup__text--capacity').textContent = arr[num].offer.rooms + ' комнаты для ' + arr[num].offer.guests + ' гостей';
+  cardNode.querySelector('.popup__text--time').textContent = 'Заезд после ' + arr[num].offer.checkin + ', выезд до ' + arr[num].offer.checkout;
+  cardNode.querySelector('.popup__features').textContent = arr[num].offer.features;
+  cardNode.querySelector('.popup__description').textContent = arr[num].offer.description;
+  cardNode.querySelector('.popup__avatar').src = arr[num].author.avatar;
+  insertPhoto(cardNode.querySelector('.popup__photos'), arr[num].offer.photos);
+  fragment.appendChild(cardNode);
+  return fragment;
+};
+
+var objectList = generateObjectsList();
+pinsBlock.appendChild(getObjectsList(objectList));
+mapFilters.before(getCardModal(objectList, 0));
