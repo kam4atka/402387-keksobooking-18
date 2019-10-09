@@ -8,29 +8,25 @@ var PIN_HEIGHT = 70;
 var ARRAY_TYPES = ['palace', 'flat', 'house', 'bungalo'];
 var ARRAY_TIMES = ['12:00', '13:00', '14:00'];
 var ARRAY_FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
-var ValidateParam = {
-  titleMin: 30,
-  titleMax: 100,
-  priceMin: {
-    palace: 10000,
-    flat: 1000,
-    house: 5000,
-    bungalo: 0
-  },
-  priceMax: 1000000,
-
+var PriceMin = {
+  PALACE: 10000,
+  FLAT: 1000,
+  HOUSE: 5000,
+  BUNGALO: 0
+};
+var PriceMax = {
+  DEFAULT: 1000000
 };
 var ErrorMessage = {
-  capacity: 'Допустимые значения: ',
-  title: 'Заголовок должен быть не короче ' + ValidateParam.titleMin + ' символов и не длинее ' + ValidateParam.titleMax,
-  priceMin: 'Цена не должна быть меньше ',
-  priceMax: 'Цена не должна превышать '
+  CAPACITY: 'Допустимые значения: ',
+  PRICEMIN: 'Цена не должна быть меньше ',
+  PRICEMAX: 'Цена не должна превышать '
 };
-var ArrayTypes = {
-  palace: 'Дворец',
-  flat: 'Квартира',
-  house: 'Дом',
-  bungalo: 'Бунгало'
+var ObjectType = {
+  PALACE: 'Дворец',
+  FLAT: 'Квартира',
+  HOUSE: 'Дом',
+  BUNGALO: 'Бунгало'
 };
 var KeyCodes = {
   ESC: 27,
@@ -46,7 +42,6 @@ var mapFilters = document.querySelector('.map__filters-container');
 var adForm = document.querySelector('.ad-form');
 var adFormAddress = adForm.querySelector('#address');
 var adFormSubmit = document.querySelector('.ad-form__submit');
-var adFormTitle = adForm.querySelector('#title');
 var adFormRoom = adForm.querySelector('#room_number');
 var adFormCapacity = adForm.querySelector('#capacity');
 var adFormType = adForm.querySelector('#type');
@@ -172,7 +167,7 @@ var getCardModal = function (obj) {
   cardNode.querySelector('.popup__title').textContent = obj.offer.title;
   cardNode.querySelector('.popup__text--address').textContent = obj.offer.address;
   cardNode.querySelector('.popup__text--price').textContent = obj.offer.price + ' ₽/ночь';
-  cardNode.querySelector('.popup__type').textContent = ArrayTypes[obj.offer.type];
+  cardNode.querySelector('.popup__type').textContent = ObjectType[obj.offer.type.toUpperCase()];
   cardNode.querySelector('.popup__text--capacity').textContent = obj.offer.rooms + ' комнаты для ' + obj.offer.guests + ' гостей';
   cardNode.querySelector('.popup__text--time').textContent = 'Заезд после ' + obj.offer.checkin + ', выезд до ' + obj.offer.checkout;
   insertFeatures(cardNode.querySelector('.popup__features'), obj.offer.features);
@@ -180,6 +175,15 @@ var getCardModal = function (obj) {
   cardNode.querySelector('.popup__avatar').src = obj.author.avatar;
   insertPhoto(cardNode.querySelector('.popup__photos'), obj.offer.photos);
   return cardNode;
+};
+
+var hideCurrentCard = function () {
+  if (mapBlock.querySelector('.map__card')) {
+    var cardMapBlock = mapBlock.querySelector('.map__card');
+    cardMapBlock.addEventListener('keydown', tabEscCardHandler);
+    var cardCloseMapBlock = cardMapBlock.querySelector('.popup__close');
+    cardCloseMapBlock.addEventListener('click', clickCloseCardHandler);
+  }
 };
 
 var clickCloseCardHandler = function (evt) {
@@ -239,17 +243,17 @@ var cleanCustomValidity = function (obj) {
   obj.setCustomValidity('');
 };
 
-var setPricePlaceholder = function () {
-  adFormPrice.placeholder = ValidateParam.priceMin[adFormType.value];
+var setPriceParameter = function () {
+  adFormPrice.placeholder = PriceMin[adFormType.value.toUpperCase()];
+  adFormPrice.min = PriceMin[adFormType.value.toUpperCase()];
+  adFormPrice.max = PriceMax.DEFAULT;
 };
 
 var compareCapacityRoom = function () {
-
   var valueRoom = +adFormRoom.value;
   var valuesCapacity = adFormCapacity.options;
   var valueCapacity = +adFormCapacity.value;
   var allowValues = [];
-
   if (valueRoom < valueCapacity) {
     allowValues.push(valueRoom);
     for (var i = 0; i < valuesCapacity.length; i++) {
@@ -259,17 +263,14 @@ var compareCapacityRoom = function () {
     }
     return allowValues;
   }
-
   if (valueRoom === 100 && valueCapacity !== 0) {
     allowValues.push(valuesCapacity[valuesCapacity.length - 1].text);
     return allowValues;
   }
-
   if (valueCapacity === 0 && valueRoom !== 100) {
     allowValues.push(100);
     return allowValues;
   }
-
   return allowValues;
 };
 
@@ -278,67 +279,29 @@ var validateCapacityValue = function () {
   cleanCustomValidity(adFormRoom);
   cleanCustomValidity(adFormCapacity);
   if (allowArrayValue[0] === 0) {
-    adFormCapacity.setCustomValidity(ErrorMessage.capacity + allowArrayValue[0]);
+    adFormCapacity.setCustomValidity(ErrorMessage.CAPACITY + allowArrayValue[0]);
     return;
   }
   if (allowArrayValue[0] === 100) {
-    adFormRoom.setCustomValidity(ErrorMessage.capacity + allowArrayValue[0]);
+    adFormRoom.setCustomValidity(ErrorMessage.CAPACITY + allowArrayValue[0]);
     return;
   }
   if (allowArrayValue.length >= 1) {
-    adFormCapacity.setCustomValidity(ErrorMessage.capacity + allowArrayValue);
+    adFormCapacity.setCustomValidity(ErrorMessage.CAPACITY + allowArrayValue);
     return;
   }
 };
 
-var validateTitleValue = function () {
-  cleanCustomValidity(adFormTitle);
-  var adFormTitleValue = adFormTitle.value;
-  if (adFormTitleValue.length < 30 || adFormTitleValue.length > 100) {
-    adFormTitle.setCustomValidity(ErrorMessage.title);
-  }
+var timeInHandler = function (evt) {
+  adFormTimeOut.value = evt.target.value;
 };
 
-var validatePriceValue = function () {
-  cleanCustomValidity(adFormPrice);
-  var adFormPriceValue = adFormPrice.value;
-  if (ValidateParam.priceMin[adFormType.value] && adFormPriceValue < ValidateParam.priceMin[adFormType.value]) {
-    adFormPrice.setCustomValidity(ErrorMessage.priceMin + ValidateParam.priceMin[adFormType.value]);
-  }
-  if (adFormPriceValue > ValidateParam.priceMax) {
-    adFormPrice.setCustomValidity(ErrorMessage.priceMax + ValidateParam.priceMax);
-  }
-};
-
-var validateAddressValue = function () {
-  if (!adFormAddress.hasAttribute('readonly')) {
-    adFormAddress.setAttribute('readonly', '');
-  }
-};
-
-var validateTime = function (evt) {
-  var currentTimeValue = evt.target.value;
-  if (evt.target.id === 'timein') {
-    adFormTimeOut.value = currentTimeValue;
-  }
-  if (evt.target.id === 'timeout') {
-    adFormTimeIn.value = currentTimeValue;
-  }
+var timeOutHandler = function (evt) {
+  adFormTimeIn.value = evt.target.value;
 };
 
 var validateAdFormHandler = function () {
-  validateTitleValue();
-  validatePriceValue();
   validateCapacityValue();
-};
-
-var hideCurrentCard = function () {
-  if (mapBlock.querySelector('.map__card')) {
-    var cardMapBlock = mapBlock.querySelector('.map__card');
-    cardMapBlock.addEventListener('keydown', tabEscCardHandler);
-    var cardCloseMapBlock = cardMapBlock.querySelector('.popup__close');
-    cardCloseMapBlock.addEventListener('click', clickCloseCardHandler);
-  }
 };
 
 var pinMapHandler = function (evt) {
@@ -355,11 +318,10 @@ var pinMapHandler = function (evt) {
     mapFilters.before(getCardModal(objectList[0]));
     hideCurrentCard();
 
-    validateAddressValue();
-    setPricePlaceholder();
-    adFormType.addEventListener('change', setPricePlaceholder);
-    adFormTimeIn.addEventListener('change', validateTime);
-    adFormTimeOut.addEventListener('change', validateTime);
+    setPriceParameter();
+    adFormType.addEventListener('change', setPriceParameter);
+    adFormTimeIn.addEventListener('change', timeInHandler);
+    adFormTimeOut.addEventListener('change', timeOutHandler);
     adFormSubmit.addEventListener('click', validateAdFormHandler);
 
     pinMapMain.removeEventListener('mousedown', pinMapHandler);
