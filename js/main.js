@@ -14,13 +14,8 @@ var PriceMin = {
   HOUSE: 5000,
   BUNGALO: 0
 };
-var PriceMax = {
-  DEFAULT: 1000000
-};
 var ErrorMessage = {
-  CAPACITY: 'Допустимые значения: ',
-  PRICEMIN: 'Цена не должна быть меньше ',
-  PRICEMAX: 'Цена не должна превышать '
+  CAPACITY: 'Допустимые значения: '
 };
 var ObjectType = {
   PALACE: 'Дворец',
@@ -204,18 +199,14 @@ var tabEscCardHandler = function (evt) {
 var disableForm = function () {
   var elementArr = document.querySelectorAll('.ad-form fieldset, .map__filters input, .map__filters select');
   elementArr.forEach(function (item) {
-    if (!item.hasAttribute('disabled')) {
-      item.setAttribute('disabled', '');
-    }
+    item.setAttribute('disabled', '');
   });
 };
 
 var enableForm = function () {
   var elementArr = document.querySelectorAll('.ad-form fieldset, .map__filters input, .map__filters select');
   elementArr.forEach(function (item) {
-    if (item.hasAttribute('disabled')) {
-      item.removeAttribute('disabled');
-    }
+    item.removeAttribute('disabled');
   });
 };
 
@@ -225,17 +216,17 @@ var getCoordPin = function (obj) {
   var left = objCoord.left + pageXOffset;
   var top = objCoord.top + pageYOffset;
   var pinPosition = {};
-  if (mapBlock.classList.contains('map--faded')) {
-    pinPosition = {
-      x: (left - marginLeft) + (PIN_MAIN_WIDTH / 2),
-      y: top + (PIN_MAIN_WIDTH / 2)
-    };
-  } else {
-    pinPosition = {
-      x: (left - marginLeft) + (PIN_MAIN_WIDTH / 2),
-      y: top + PIN_MAIN_HEIGHT
-    };
-  }
+  mapBlock.classList.contains('map--faded')
+    ? (
+      pinPosition = {
+        x: (left - marginLeft) + (PIN_MAIN_WIDTH / 2),
+        y: top + (PIN_MAIN_WIDTH / 2)
+      })
+    : (
+      pinPosition = {
+        x: (left - marginLeft) + (PIN_MAIN_WIDTH / 2),
+        y: top + PIN_MAIN_HEIGHT
+      });
   return pinPosition;
 };
 
@@ -246,7 +237,6 @@ var cleanCustomValidity = function (obj) {
 var setPriceParameter = function () {
   adFormPrice.placeholder = PriceMin[adFormType.value.toUpperCase()];
   adFormPrice.min = PriceMin[adFormType.value.toUpperCase()];
-  adFormPrice.max = PriceMax.DEFAULT;
 };
 
 var compareCapacityRoom = function () {
