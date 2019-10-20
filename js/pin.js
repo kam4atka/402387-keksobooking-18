@@ -39,31 +39,18 @@
 
     var pinMapMoveHandler = function (mEvt) {
       var position = {
-        left: mEvt.pageX - map.margin - (PinSize.PIN_MAIN_WIDTH / 2),
-        top: mEvt.pageY - (PinSize.PIN_MAIN_HEIGHT / 2)
+        left: Math.max(0, Math.min(mEvt.pageX - map.margin - (PinSize.PIN_MAIN_WIDTH / 2), map.width - PinSize.PIN_MAIN_WIDTH)),
+        top: Math.max(MapHeight.Y_MIN, Math.min(mEvt.pageY - (PinSize.PIN_MAIN_HEIGHT / 2), MapHeight.Y_MAX))
       };
 
-      if (position.top < MapHeight.Y_MIN || position.top > MapHeight.Y_MAX) {
-        removeTrackPinMapMain();
-        position.top = Math.max(MapHeight.Y_MIN, Math.min(position.top, MapHeight.Y_MAX));
-      }
-
-      if (position.left < 0 || position.left > rightBorderMap) {
-        removeTrackPinMapMain();
-        position.left = Math.max(0, Math.min(position.left, map.width));
-      }
       setPinMainCoords(position.left, position.top);
       window.form.setAddressCoords(getCoordPin(window.map.pinMapMain));
     };
 
-    var removeTrackPinMapMain = function () {
-      document.removeEventListener('mousemove', pinMapMoveHandler);
-      document.removeEventListener('mouseup', pinMapUpHandler);
-    };
-
     var pinMapUpHandler = function (uEvt) {
       uEvt.preventDefault();
-      removeTrackPinMapMain();
+      document.removeEventListener('mousemove', pinMapMoveHandler);
+      document.removeEventListener('mouseup', pinMapUpHandler);
     };
 
     document.addEventListener('mousemove', pinMapMoveHandler);
