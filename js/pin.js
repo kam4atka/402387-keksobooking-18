@@ -2,7 +2,7 @@
 
 (function () {
   var PinSize = {
-    PIN_MAIN_WIDTH: 62,
+    PIN_MAIN_WIDTH: 65,
     PIN_MAIN_HEIGHT: 72,
     PIN_WIDTH: 50,
     PIN_HEIGHT: 70
@@ -35,54 +35,30 @@
   var pinMapDownHandler = function (dEvt) {
     dEvt.preventDefault();
     window.map.pinMapMain.style.zIndex = 2;
-
-    var startCoords = {
-      x: dEvt.pageX,
-      y: dEvt.pageY
-    };
-
-    var rightBorderMap = map.margin + map.width - (PinSize.PIN_MAIN_WIDTH / 2);
+    var rightBorderMap = map.width - PinSize.PIN_MAIN_WIDTH;
 
     var pinMapMoveHandler = function (mEvt) {
-      mEvt.preventDefault();
-
-      var shift = {
-        x: startCoords.x - mEvt.pageX,
-        y: startCoords.y - mEvt.pageY
-      };
-
-      startCoords = {
-        x: mEvt.pageX,
-        y: mEvt.pageY
-      };
-
       var position = {
-        left: window.map.pinMapMain.offsetLeft - shift.x,
-        top: window.map.pinMapMain.offsetTop - shift.y
+        left: mEvt.pageX - map.margin - (PinSize.PIN_MAIN_WIDTH / 2),
+        top: mEvt.pageY - (PinSize.PIN_MAIN_HEIGHT / 2)
       };
 
+      if (position.top < MapHeight.Y_MIN || position.top > MapHeight.Y_MAX) {
+        removeTrackPinMapMain();
+        position.top = Math.max(MapHeight.Y_MIN, Math.min(position.top, MapHeight.Y_MAX));
+      }
+
+      if (position.left < 0 || position.left > rightBorderMap) {
+        removeTrackPinMapMain();
+        position.left = Math.max(0, Math.min(position.left, map.width));
+      }
       setPinMainCoords(position.left, position.top);
-
-      if (startCoords.y < MapHeight.Y_MIN || startCoords.y > MapHeight.Y_MAX) {
-        removeTrackPinMapMain();
-        if (startCoords.y < MapHeight.Y_MIN) {
-          setPinMainCoords(position.left, MapHeight.Y_MIN);
-        }
-        if (startCoords.y > MapHeight.Y_MAX) {
-          setPinMainCoords(position.left, MapHeight.Y_MAX - PinSize.PIN_MAIN_HEIGHT);
-        }
-      }
-
-      if (startCoords.x < map.margin + PinSize.PIN_MAIN_WIDTH / 2 || startCoords.x > rightBorderMap) {
-        removeTrackPinMapMain();
-        if (startCoords.x < map.margin + PinSize.PIN_MAIN_WIDTH / 2) {
-          setPinMainCoords(0, position.top);
-        }
-        if (startCoords.x > rightBorderMap) {
-          setPinMainCoords(map.width - PinSize.PIN_MAIN_WIDTH, position.top);
-        }
-      }
       window.form.setAddressCoords(getCoordPin(window.map.pinMapMain));
+    };
+
+    var removeTrackPinMapMain = function () {
+      document.removeEventListener('mousemove', pinMapMoveHandler);
+      document.removeEventListener('mouseup', pinMapUpHandler);
     };
 
     var pinMapUpHandler = function (uEvt) {
@@ -90,13 +66,8 @@
       removeTrackPinMapMain();
     };
 
-    var removeTrackPinMapMain = function () {
-      window.map.pinMapMain.removeEventListener('mousemove', pinMapMoveHandler);
-      window.map.pinMapMain.removeEventListener('mouseup', pinMapUpHandler);
-    };
-
-    window.map.pinMapMain.addEventListener('mousemove', pinMapMoveHandler);
-    window.map.pinMapMain.addEventListener('mouseup', pinMapUpHandler);
+    document.addEventListener('mousemove', pinMapMoveHandler);
+    document.addEventListener('mouseup', pinMapUpHandler);
   };
 
   window.pin = {
