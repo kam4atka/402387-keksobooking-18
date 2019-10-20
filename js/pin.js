@@ -35,7 +35,6 @@
   var pinMapDownHandler = function (dEvt) {
     dEvt.preventDefault();
     window.map.pinMapMain.style.zIndex = 2;
-    var rightBorderMap = map.width - PinSize.PIN_MAIN_WIDTH;
 
     var pinMapMoveHandler = function (mEvt) {
       var position = {
