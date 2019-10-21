@@ -25,6 +25,7 @@
 
       window.map.pinMapMain.removeEventListener('mousedown', pinMapHandler);
       window.map.pinMapMain.removeEventListener('keydown', pinMapHandler);
+      window.map.pinMapMain.addEventListener('mousedown', window.pin.pinMapDownHandler);
     }
   };
 
