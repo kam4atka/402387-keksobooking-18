@@ -9,12 +9,18 @@
       window.form.enable();
       window.form.setAddressCoords(window.pin.getCoordPin(window.map.pinMapMain));
 
-      var objectList = window.dataTest.generateObjectsList(window.pin.PinSize.PIN_WIDTH, window.pin.PinSize.PIN_HEIGHT);
+      var loadError = function (error) {
+        var errorTemplate = document.querySelector('#error').content;
+        var errorNode = errorTemplate.cloneNode(true);
+        errorNode.querySelector('.error__message').textContent = error;
+        window.map.mapBlock.before(errorNode);
+      };
 
-      window.map.pinBlock.appendChild(window.card.getObjectsList(objectList));
-      window.map.filterBlock.before(window.card.getCardModal(objectList[0]));
-
-      window.card.hideCurrentCard();
+      window.data.load(function (data) {
+        window.map.pinBlock.appendChild(window.card.getObjectsList(data));
+        window.map.filterBlock.before(window.card.getCardModal(data[0]));
+        window.card.hideCurrentCard();
+      }, loadError);
 
       window.form.setPriceParameter();
 
@@ -25,6 +31,7 @@
 
       window.map.pinMapMain.removeEventListener('mousedown', pinMapHandler);
       window.map.pinMapMain.removeEventListener('keydown', pinMapHandler);
+
       window.map.pinMapMain.addEventListener('mousedown', window.pin.pinMapDownHandler);
     }
   };
