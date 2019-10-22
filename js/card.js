@@ -8,8 +8,6 @@
     BUNGALO: 'Бунгало'
   };
 
-  var errorImages = ['https://placehold.it/517x500'];
-
   var insertPhoto = function (parent, arr) {
     if (parent.children.length > 0) {
       var photo = parent.querySelector('.popup__photo');
@@ -46,7 +44,11 @@
     insertFeatures(cardNode.querySelector('.popup__features'), obj.offer.features);
     cardNode.querySelector('.popup__description').textContent = obj.offer.description;
     cardNode.querySelector('.popup__avatar').src = obj.author.avatar;
-    insertPhoto(cardNode.querySelector('.popup__photos'), (obj.offer.photos.length > 0) ? obj.offer.photos : errorImages);
+    if (obj.offer.photos.length !== 0) {
+      insertPhoto(cardNode.querySelector('.popup__photos'), obj.offer.photos);
+    } else {
+      cardNode.querySelector('.popup__photos').remove();
+    }
     return cardNode;
   };
 
