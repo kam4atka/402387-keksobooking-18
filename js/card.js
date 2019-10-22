@@ -12,9 +12,6 @@
     if (parent.children.length > 0) {
       var photo = parent.querySelector('.popup__photo');
       photo.src = arr[0];
-      if (arr.length === 1) {
-        return;
-      }
       for (var i = 1; i < arr.length; i++) {
         var photoNode = photo.cloneNode(true);
         photoNode.src = arr[i];
@@ -47,7 +44,11 @@
     insertFeatures(cardNode.querySelector('.popup__features'), obj.offer.features);
     cardNode.querySelector('.popup__description').textContent = obj.offer.description;
     cardNode.querySelector('.popup__avatar').src = obj.author.avatar;
-    insertPhoto(cardNode.querySelector('.popup__photos'), obj.offer.photos);
+    if (obj.offer.photos.length !== 0) {
+      insertPhoto(cardNode.querySelector('.popup__photos'), obj.offer.photos);
+    } else {
+      cardNode.querySelector('.popup__photos').remove();
+    }
     return cardNode;
   };
 
