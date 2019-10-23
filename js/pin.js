@@ -1,12 +1,15 @@
 'use strict';
 
 (function () {
-  var PinSize = {
+  var PinSetting = {
+    PIN_INITIAL_X: 570,
+    PIN_INITIAL_Y: 375,
     PIN_MAIN_WIDTH: 65,
     PIN_MAIN_HEIGHT: 72,
     PIN_WIDTH: 50,
     PIN_HEIGHT: 70
   };
+
   var MapHeight = {
     Y_MIN: 130,
     Y_MAX: 630
@@ -21,8 +24,8 @@
     var left = objCoord.left + pageXOffset;
     var top = objCoord.top + pageYOffset;
     var pinPosition = {
-      x: (left - map.margin) + (PinSize.PIN_MAIN_WIDTH / 2),
-      y: top + (window.map.mapBlock.classList.contains('map--faded') ? (PinSize.PIN_MAIN_WIDTH / 2) : (PinSize.PIN_MAIN_HEIGHT))
+      x: (left - map.margin) + (PinSetting.PIN_MAIN_WIDTH / 2),
+      y: top + (window.map.mapBlock.classList.contains('map--faded') ? (PinSetting.PIN_MAIN_WIDTH / 2) : (PinSetting.PIN_MAIN_HEIGHT))
     };
     return pinPosition;
   };
@@ -38,8 +41,8 @@
 
     var pinMapMoveHandler = function (mEvt) {
       var position = {
-        left: Math.max(0, Math.min(mEvt.pageX - map.margin - (PinSize.PIN_MAIN_WIDTH / 2), map.width - PinSize.PIN_MAIN_WIDTH)),
-        top: Math.max(MapHeight.Y_MIN, Math.min(mEvt.pageY - (PinSize.PIN_MAIN_HEIGHT / 2), MapHeight.Y_MAX))
+        left: Math.max(0, Math.min(mEvt.pageX - map.margin - (PinSetting.PIN_MAIN_WIDTH / 2), map.width - PinSetting.PIN_MAIN_WIDTH)),
+        top: Math.max(MapHeight.Y_MIN, Math.min(mEvt.pageY - (PinSetting.PIN_MAIN_HEIGHT / 2), MapHeight.Y_MAX))
       };
 
       setPinMainCoords(position.left, position.top);
@@ -57,8 +60,9 @@
   };
 
   window.pin = {
-    PinSize: PinSize,
+    PinSetting: PinSetting,
     getCoordPin: getCoordPin,
+    setPinMainCoords: setPinMainCoords,
     pinMapDownHandler: pinMapDownHandler
   };
 })();

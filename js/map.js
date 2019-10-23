@@ -6,10 +6,20 @@
   var pinMapMain = mapBlock.querySelector('.map__pin--main');
   var filterBlock = document.querySelector('.map__filters-container');
 
+  var showMap = function () {
+    mapBlock.classList.remove('map--faded');
+  };
+
+  var hideMap = function () {
+    mapBlock.classList.add('map--faded');
+  };
+
   window.map = {
     mapBlock: mapBlock,
     pinBlock: pinBlock,
     pinMapMain: pinMapMain,
-    filterBlock: filterBlock
+    filterBlock: filterBlock,
+    show: showMap,
+    hide: hideMap
   };
 })();
