@@ -25,6 +25,10 @@
     adForm.classList.remove('ad-form--disabled');
   };
 
+  var hideForm = function () {
+    adForm.classList.add('ad-form--disabled');
+  };
+
   var disableForm = function () {
     var elementArr = document.querySelectorAll('.ad-form fieldset, .map__filters input, .map__filters select');
     elementArr.forEach(function (item) {
@@ -104,11 +108,13 @@
   };
 
   window.form = {
+    adForm: adForm,
     adFormType: adFormType,
     adFormTimeIn: adFormTimeIn,
     adFormTimeOut: adFormTimeOut,
     adFormSubmit: adFormSubmit,
     show: showForm,
+    hide: hideForm,
     disable: disableForm,
     enable: enableForm,
     setAddressCoords: setAddressCoords,

@@ -57,8 +57,8 @@
     var objectTemplate = document.querySelector('#pin').content;
     arr.forEach(function (item) {
       var objectNode = objectTemplate.cloneNode(true);
-      var coordX = item.location.x - (window.pin.PinSize.PIN_WIDTH / 2);
-      var coordY = item.location.y - window.pin.PinSize.PIN_HEIGHT;
+      var coordX = item.location.x - (window.pin.PinSetting.PIN_WIDTH / 2);
+      var coordY = item.location.y - window.pin.PinSetting.PIN_HEIGHT;
       var pinElement = objectNode.querySelector('.map__pin');
       pinElement.style.left = coordX + 'px';
       pinElement.style.top = coordY + 'px';
