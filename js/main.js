@@ -52,17 +52,33 @@
         }, setError);
       };
 
+      var pinsArray = [];
       window.data.load(function (data) {
-        window.map.pinBlock.appendChild(window.card.getObjectsList(data));
-        window.map.filterBlock.before(window.card.getCardModal(data[0]));
-        window.card.hideCurrentCard();
+        pinsArray = data;
+        filterHandler();
       }, setError);
+
+      var filterHandler = function (filterEvt) {
+        window.map.clear();
+        window.map.removeCard();
+        var sample;
+        if (filterEvt) {
+          sample = window.filter.update(pinsArray, filterEvt.target.value);
+        } else {
+          sample = window.filter.update(pinsArray, false);
+        }
+        window.map.pinBlock.appendChild(window.card.getObjectsList(sample.slice(0, 5)));
+        window.map.filterBlock.before(window.card.getCardModal(sample[0]));
+        window.card.hideCurrentCard();
+      };
 
       window.form.setPriceParameter();
       window.form.adFormType.addEventListener('change', window.form.setPriceParameter);
       window.form.adFormTimeIn.addEventListener('change', window.form.timeInHandler);
       window.form.adFormTimeOut.addEventListener('change', window.form.timeOutHandler);
       window.form.adFormSubmit.addEventListener('click', window.form.validateCapacityValue);
+
+      window.filter.typeElement.addEventListener('change', filterHandler);
 
       window.form.adForm.addEventListener('submit', sendHandler, setError);
 
@@ -78,12 +94,8 @@
     window.form.disable();
     window.form.hide();
 
-    window.map.mapBlock.querySelectorAll('.map__pin').forEach(function (item) {
-      if (!item.classList.contains('map__pin--main')) {
-        item.remove();
-      }
-    });
-    window.map.mapBlock.querySelector('.map__card').remove();
+    window.map.clear();
+    // window.map.mapBlock.querySelector('.map__card').remove();
     window.map.hide();
 
     window.pin.setPinMainCoords(window.pin.PinSetting.PIN_INITIAL_X, window.pin.PinSetting.PIN_INITIAL_Y);
