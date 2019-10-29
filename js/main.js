@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+
   var pinMapHandler = function (evt) {
     if (evt.type === 'mousedown' || evt.keyCode === window.util.KeyCode.ENTER) {
       window.map.show();
@@ -58,21 +59,16 @@
         filterHandler();
       }, setError);
 
+      var updatePins = window.debounce(window.filter.update);
+
       var filterHandler = function (filterEvt) {
         window.map.clear();
         window.map.removeCard();
-        var sample;
 
         if (filterEvt) {
-          sample = window.filter.update(pinsArray, true);
+          updatePins(pinsArray, true);
         } else {
-          sample = window.filter.update(pinsArray, false);
-        }
-
-        if (sample.length > 0) {
-          window.map.pinBlock.appendChild(window.card.getObjectsList(sample.slice(0, 5)));
-          window.map.filterBlock.before(window.card.getCardModal(sample[0]));
-          window.card.hideCurrentCard();
+          updatePins(pinsArray, false);
         }
       };
 

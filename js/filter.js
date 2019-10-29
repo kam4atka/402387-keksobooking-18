@@ -86,13 +86,16 @@
   };
 
   var update = function (arr, type) {
-    if (!type) {
-      return arr;
-    } else {
+    if (type) {
       arr = arr.filter(types).filter(prices).filter(rooms).filter(guests);
       arr = features(arr);
     }
-    return arr;
+
+    if (arr.length > 0) {
+      window.map.pinBlock.appendChild(window.card.getObjectsList(arr.slice(0, 5)));
+      window.map.filterBlock.before(window.card.getCardModal(arr[0]));
+      window.card.hideCurrentCard();
+    }
   };
 
   window.filter = {
