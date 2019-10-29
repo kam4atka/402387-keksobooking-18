@@ -62,14 +62,18 @@
         window.map.clear();
         window.map.removeCard();
         var sample;
+
         if (filterEvt) {
-          sample = window.filter.update(pinsArray, filterEvt.target.value);
+          sample = window.filter.update(pinsArray, true);
         } else {
           sample = window.filter.update(pinsArray, false);
         }
-        window.map.pinBlock.appendChild(window.card.getObjectsList(sample.slice(0, 5)));
-        window.map.filterBlock.before(window.card.getCardModal(sample[0]));
-        window.card.hideCurrentCard();
+
+        if (sample.length > 0) {
+          window.map.pinBlock.appendChild(window.card.getObjectsList(sample.slice(0, 5)));
+          window.map.filterBlock.before(window.card.getCardModal(sample[0]));
+          window.card.hideCurrentCard();
+        }
       };
 
       window.form.setPriceParameter();
@@ -78,7 +82,13 @@
       window.form.adFormTimeOut.addEventListener('change', window.form.timeOutHandler);
       window.form.adFormSubmit.addEventListener('click', window.form.validateCapacityValue);
 
-      window.filter.typeElement.addEventListener('change', filterHandler);
+      window.filter.block.querySelectorAll('select').forEach(function (item) {
+        item.addEventListener('change', filterHandler);
+      });
+
+      window.filter.block.querySelectorAll('input[name="features"]').forEach(function (item) {
+        item.addEventListener('click', filterHandler);
+      });
 
       window.form.adForm.addEventListener('submit', sendHandler, setError);
 
