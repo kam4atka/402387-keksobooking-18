@@ -90,7 +90,6 @@
     window.form.hide();
 
     window.map.clear();
-    // window.map.mapBlock.querySelector('.map__card').remove();
     window.map.hide();
 
     window.pin.setPinMainCoords(window.pin.PinSetting.PIN_INITIAL_X, window.pin.PinSetting.PIN_INITIAL_Y);
