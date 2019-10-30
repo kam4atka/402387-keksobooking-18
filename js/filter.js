@@ -23,6 +23,8 @@
   var filterRoomElement = filterBlock.querySelector('#housing-rooms');
   var filterGuestElement = filterBlock.querySelector('#housing-guests');
 
+  var inputs = filterBlock.querySelectorAll('input[name="features"]');
+
   var types = function (item) {
     var typeValue = filterTypeElement.value;
     if (item.offer.type === typeValue || typeValue === typeName.any) {
@@ -37,63 +39,44 @@
       return true;
     }
     if (priceValue === priceName.low) {
-      if (item.offer.price < namePrice.low) {
-        return true;
-      }
+      return item.offer.price < namePrice.low;
     }
     if (priceValue === priceName.high) {
-      if (item.offer.price > namePrice.high) {
-        return true;
-      }
+      return item.offer.price > namePrice.high;
     }
     if (priceValue === priceName.middle) {
-      if (item.offer.price >= namePrice.low && item.offer.price <= namePrice.high) {
-        return true;
-      }
+      return item.offer.price >= namePrice.low && item.offer.price <= namePrice.high;
     }
     return false;
   };
 
   var rooms = function (item) {
     var roomValue = filterRoomElement.value;
-    if (item.offer.rooms === Number(roomValue) || roomValue === typeName.any) {
-      return true;
-    }
-    return false;
+    return item.offer.rooms === Number(roomValue) || roomValue === typeName.any;
   };
 
   var guests = function (item) {
     var guestValue = filterGuestElement.value;
-    if (item.offer.guests === Number(guestValue) || guestValue === typeName.any) {
-      return true;
-    }
-    return false;
+    return item.offer.guests === Number(guestValue) || guestValue === typeName.any;
   };
 
-  var features = function (arr) {
-    var inputs = filterBlock.querySelectorAll('input[name="features"]');
+  var features = function (item) {
+    var result = true;
     inputs.forEach(function (input) {
       if (input.checked) {
-        arr = arr.filter(function (item) {
-          if (item.offer.features.includes(input.value)) {
-            return true;
-          }
-          return false;
+        result = item.offer.features.some(function (feature) {
+          return feature === input.value;
         });
       }
     });
-    return arr;
+    return result;
   };
 
-  var update = function (arr, type) {
-    if (type) {
-      arr = arr.filter(types).filter(prices).filter(rooms).filter(guests);
-      arr = features(arr);
-    }
+  var update = function (arr) {
+    arr = arr.filter(types).filter(prices).filter(rooms).filter(guests).filter(features);
 
     if (arr.length > 0) {
       window.map.pinBlock.appendChild(window.card.getObjectsList(arr.slice(0, 5)));
-      window.map.filterBlock.before(window.card.getCardModal(arr[0]));
       window.card.hideCurrentCard();
     }
   };

@@ -61,15 +61,10 @@
 
       var updatePins = window.debounce(window.filter.update);
 
-      var filterHandler = function (filterEvt) {
+      var filterHandler = function () {
         window.map.clear();
         window.map.removeCard();
-
-        if (filterEvt) {
-          updatePins(pinsArray, true);
-        } else {
-          updatePins(pinsArray, false);
-        }
+        updatePins(pinsArray, true);
       };
 
       window.form.setPriceParameter();
@@ -78,13 +73,7 @@
       window.form.adFormTimeOut.addEventListener('change', window.form.timeOutHandler);
       window.form.adFormSubmit.addEventListener('click', window.form.validateCapacityValue);
 
-      window.filter.block.querySelectorAll('select').forEach(function (item) {
-        item.addEventListener('change', filterHandler);
-      });
-
-      window.filter.block.querySelectorAll('input[name="features"]').forEach(function (item) {
-        item.addEventListener('click', filterHandler);
-      });
+      window.filter.block.addEventListener('change', filterHandler);
 
       window.form.adForm.addEventListener('submit', sendHandler, setError);
 
