@@ -27,10 +27,7 @@
 
   var types = function (item) {
     var typeValue = filterTypeElement.value;
-    if (item.offer.type === typeValue || typeValue === typeName.any) {
-      return true;
-    }
-    return false;
+    return item.offer.type === typeValue || typeValue === typeName.any;
   };
 
   var prices = function (item) {
