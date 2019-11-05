@@ -20,6 +20,10 @@
   var adFormPrice = adForm.querySelector('#price');
   var adFormTimeIn = adForm.querySelector('#timein');
   var adFormTimeOut = adForm.querySelector('#timeout');
+  var adFormAvatarElement = adForm.querySelector('.ad-form__field');
+  var adFormAvatarPreview = adForm.querySelector('.ad-form-header__preview');
+  var adFormPhotoElement = adForm.querySelector('.ad-form__upload');
+  var adFormPhotoPreview = adForm.querySelector('.ad-form__photo');
 
   var showForm = function () {
     adForm.classList.remove('ad-form--disabled');
@@ -112,6 +116,10 @@
     adFormType: adFormType,
     adFormTimeIn: adFormTimeIn,
     adFormTimeOut: adFormTimeOut,
+    adFormAvatar: adFormAvatarElement,
+    adFormAvatarPreview: adFormAvatarPreview,
+    adFormPhoto: adFormPhotoElement,
+    adFormPhotoPreview: adFormPhotoPreview,
     adFormSubmit: adFormSubmit,
     show: showForm,
     hide: hideForm,
