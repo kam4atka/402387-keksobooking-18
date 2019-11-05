@@ -50,6 +50,8 @@
           disablePage();
           setSuccess();
           window.form.adForm.removeEventListener('submit', sendHandler, setError);
+          window.photo.clear(window.form.adFormAvatarPreview, false);
+          window.photo.clear(window.form.adFormPhotoPreview, true);
         }, setError);
       };
 
@@ -71,6 +73,10 @@
       window.form.adFormType.addEventListener('change', window.form.setPriceParameter);
       window.form.adFormTimeIn.addEventListener('change', window.form.timeInHandler);
       window.form.adFormTimeOut.addEventListener('change', window.form.timeOutHandler);
+
+      window.form.adFormAvatar.addEventListener('change', window.photo.upload);
+      window.form.adFormPhoto.addEventListener('change', window.photo.upload);
+
       window.form.adFormSubmit.addEventListener('click', window.form.validateCapacityValue);
 
       window.filter.block.addEventListener('change', filterHandler);
