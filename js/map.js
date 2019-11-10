@@ -22,15 +22,15 @@
   };
 
   var clearMap = function () {
-    mapBlock.querySelectorAll('.map__pin:not(.map__pin--main)').forEach(function (item) {
+    mapBlock.querySelectorAll(window.pin.searchPattern).forEach(function (item) {
       item.remove();
     });
   };
 
   window.map = {
-    mapBlock: mapBlock,
+    block: mapBlock,
     pinBlock: pinBlock,
-    pinMapMain: pinMapMain,
+    pinMain: pinMapMain,
     filterBlock: filterBlock,
     show: showMap,
     hide: hideMap,

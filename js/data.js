@@ -8,7 +8,7 @@
   var STATUS_SUCCESS = 200;
   var TIMEOUT = 10000;
 
-  var xhrObject = function (onLoad, onError) {
+  var createXhr = function (onLoad, onError) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
     xhr.timeout = TIMEOUT;
@@ -23,7 +23,7 @@
   };
 
   var load = function (onLoad, onError) {
-    var xhr = xhrObject(onLoad, onError);
+    var xhr = createXhr(onLoad, onError);
     xhr.addEventListener('error', function () {
       onError('Ошибка соединения..');
     });
@@ -35,7 +35,7 @@
   };
 
   var send = function (data, onLoad, onError) {
-    var xhr = xhrObject(onLoad, onError);
+    var xhr = createXhr(onLoad, onError);
     xhr.open('POST', Url.SERVER);
     xhr.send(data);
   };
