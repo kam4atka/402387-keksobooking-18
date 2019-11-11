@@ -24,6 +24,9 @@
   var adFormAvatarPreview = adForm.querySelector('.ad-form-header__preview');
   var adFormPhotoElement = adForm.querySelector('.ad-form__upload');
   var adFormPhotoPreview = adForm.querySelector('.ad-form__photo');
+  var adFormReset = adForm.querySelector('.ad-form__reset');
+
+  var invalidMark = '1px solid red';
 
   var showForm = function () {
     adForm.classList.remove('ad-form--disabled');
@@ -47,8 +50,8 @@
     });
   };
 
-  var cleanCustomValidity = function (obj) {
-    obj.setCustomValidity('');
+  var cleanCustomValidity = function (object) {
+    object.setCustomValidity('');
   };
 
   var setAddressCoords = function (coords) {
@@ -60,12 +63,12 @@
     adFormPrice.min = PriceMin[adFormType.value.toUpperCase()];
   };
 
-  var timeInHandler = function (evt) {
-    adFormTimeOut.value = evt.target.value;
+  var timeInHandler = function (inEvt) {
+    adFormTimeOut.value = inEvt.target.value;
   };
 
-  var timeOutHandler = function (evt) {
-    adFormTimeIn.value = evt.target.value;
+  var timeOutHandler = function (outEvt) {
+    adFormTimeIn.value = outEvt.target.value;
   };
 
   var compareCapacityRoom = function () {
@@ -75,11 +78,11 @@
     var allowValues = [];
     if (valueRoom < valueCapacity) {
       allowValues.push(valueRoom);
-      for (var i = 0; i < valuesCapacity.length; i++) {
-        if (valueRoom > +valuesCapacity[i].value && +valuesCapacity[i].value !== 0) {
-          allowValues.push(+valuesCapacity[i].value);
+      Array.from(valuesCapacity).forEach(function (valueElement) {
+        if (valueRoom > +valueElement.value && +valueElement.value !== 0) {
+          allowValues.push(+valueElement.value);
         }
-      }
+      });
       return allowValues;
     }
     if (valueRoom === 100 && valueCapacity !== 0) {
@@ -97,6 +100,7 @@
     var allowArrayValue = compareCapacityRoom();
     cleanCustomValidity(adFormRoom);
     cleanCustomValidity(adFormCapacity);
+    selectInvalidInput();
     if (allowArrayValue[0] === 0) {
       adFormCapacity.setCustomValidity(ErrorMessage.CAPACITY + allowArrayValue[0]);
       return;
@@ -111,16 +115,28 @@
     }
   };
 
+  var selectInvalidInput = function () {
+    var requirElements = adForm.querySelectorAll('input[required]');
+    requirElements.forEach(function (item) {
+      if (!item.validity.valid) {
+        item.style.border = invalidMark;
+      } else {
+        item.style.border = '';
+      }
+    });
+  };
+
   window.form = {
-    adForm: adForm,
-    adFormType: adFormType,
-    adFormTimeIn: adFormTimeIn,
-    adFormTimeOut: adFormTimeOut,
-    adFormAvatar: adFormAvatarElement,
-    adFormAvatarPreview: adFormAvatarPreview,
-    adFormPhoto: adFormPhotoElement,
-    adFormPhotoPreview: adFormPhotoPreview,
-    adFormSubmit: adFormSubmit,
+    block: adForm,
+    typeElement: adFormType,
+    timeInElement: adFormTimeIn,
+    timeOutElement: adFormTimeOut,
+    avatarElement: adFormAvatarElement,
+    avatarPreviewElement: adFormAvatarPreview,
+    photoElement: adFormPhotoElement,
+    photoPreviewElement: adFormPhotoPreview,
+    submitElement: adFormSubmit,
+    resetElement: adFormReset,
     show: showForm,
     hide: hideForm,
     disable: disableForm,

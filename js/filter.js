@@ -1,23 +1,24 @@
 'use strict';
 
 (function () {
-  var typeName = {
-    any: 'any',
-    palace: 'palace',
-    flat: 'flat',
-    house: 'house',
-    bungalo: 'bungalo'
+  var TypeName = {
+    ANY: 'any',
+    PALACE: 'palace',
+    FLAT: 'flat',
+    HOUSE: 'house',
+    BUNGALO: 'bungalo'
   };
-  var namePrice = {
-    low: 10000,
-    high: 50000
+  var NamePrice = {
+    LOW: 10000,
+    HIGH: 50000
   };
-  var priceName = {
-    low: 'low',
-    high: 'high',
-    middle: 'middle'
+  var PriceName = {
+    LOW: 'low',
+    HIGH: 'high',
+    MIDDLE: 'middle'
   };
   var filterBlock = document.querySelector('.map__filters-container');
+  var filterMap = document.querySelector('.map__filters');
   var filterTypeElement = filterBlock.querySelector('#housing-type');
   var filterPriceElement = filterBlock.querySelector('#housing-price');
   var filterRoomElement = filterBlock.querySelector('#housing-rooms');
@@ -25,39 +26,39 @@
 
   var inputs = filterBlock.querySelectorAll('input[name="features"]');
 
-  var types = function (item) {
+  var filterType = function (item) {
     var typeValue = filterTypeElement.value;
-    return item.offer.type === typeValue || typeValue === typeName.any;
+    return item.offer.type === typeValue || typeValue === TypeName.ANY;
   };
 
-  var prices = function (item) {
+  var filterPrice = function (item) {
     var priceValue = filterPriceElement.value;
-    if (priceValue === typeName.any) {
+    if (priceValue === TypeName.ANY) {
       return true;
     }
-    if (priceValue === priceName.low) {
-      return item.offer.price < namePrice.low;
+    if (priceValue === PriceName.LOW) {
+      return item.offer.price < NamePrice.LOW;
     }
-    if (priceValue === priceName.high) {
-      return item.offer.price > namePrice.high;
+    if (priceValue === PriceName.HIGH) {
+      return item.offer.price > NamePrice.HIGH;
     }
-    if (priceValue === priceName.middle) {
-      return item.offer.price >= namePrice.low && item.offer.price <= namePrice.high;
+    if (priceValue === PriceName.MIDDLE) {
+      return item.offer.price >= NamePrice.LOW && item.offer.price <= NamePrice.HIGH;
     }
     return false;
   };
 
-  var rooms = function (item) {
+  var filterRoom = function (item) {
     var roomValue = filterRoomElement.value;
-    return item.offer.rooms === Number(roomValue) || roomValue === typeName.any;
+    return item.offer.rooms === Number(roomValue) || roomValue === TypeName.ANY;
   };
 
-  var guests = function (item) {
+  var filterGuest = function (item) {
     var guestValue = filterGuestElement.value;
-    return item.offer.guests === Number(guestValue) || guestValue === typeName.any;
+    return item.offer.guests === Number(guestValue) || guestValue === TypeName.ANY;
   };
 
-  var features = function (item) {
+  var filterFeatures = function (item) {
     var result = true;
     inputs.forEach(function (input) {
       if (input.checked) {
@@ -69,18 +70,18 @@
     return result;
   };
 
-  var update = function (arr) {
-    arr = arr.filter(types).filter(prices).filter(rooms).filter(guests).filter(features);
+  var update = function (objects) {
+    objects = objects.filter(filterType).filter(filterPrice).filter(filterRoom).filter(filterGuest).filter(filterFeatures);
 
-    if (arr.length > 0) {
-      window.map.pinBlock.appendChild(window.card.getObjectsList(arr.slice(0, 5)));
-      window.card.hideCurrentCard();
+    if (objects.length > 0) {
+      window.map.pinBlock.appendChild(window.card.getObjectsList(objects.slice(0, 5)));
+      window.card.hideCurrent();
     }
   };
 
   window.filter = {
     block: filterBlock,
-    features: features,
+    form: filterMap,
     update: update
   };
 })();

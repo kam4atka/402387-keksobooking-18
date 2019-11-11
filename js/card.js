@@ -8,28 +8,28 @@
     BUNGALO: 'Бунгало'
   };
 
-  var insertPhoto = function (parent, arr) {
+  var insertPhoto = function (parent, photos) {
     if (parent.children.length > 0) {
       var photo = parent.querySelector('.popup__photo');
-      photo.src = arr[0];
-      for (var i = 1; i < arr.length; i++) {
+      photo.src = photos[0];
+      photos.forEach(function (photoItem) {
         var photoNode = photo.cloneNode(true);
-        photoNode.src = arr[i];
+        photoNode.src = photoItem;
         parent.appendChild(photoNode);
-      }
+      });
     }
   };
 
-  var insertFeatures = function (parent, arr) {
-    var listElement = parent.querySelectorAll('li');
-    for (var i = 0; i < listElement.length; i++) {
-      parent.removeChild(listElement[i]);
-    }
+  var insertFeatures = function (parent, features) {
+    var listElements = parent.querySelectorAll('li');
+    listElements.forEach(function (listElement) {
+      parent.removeChild(listElement);
+    });
     var classElement = 'popup__feature';
-    for (var j = 0; j < arr.length; j++) {
-      var element = '<li class="' + classElement + ' ' + classElement + '--' + arr[j] + '"></li>';
+    features.forEach(function (feature) {
+      var element = '<li class="' + classElement + ' ' + classElement + '--' + feature + '"></li>';
       parent.insertAdjacentHTML('beforebegin', element);
-    }
+    });
   };
 
   var getCardModal = function (obj) {
@@ -55,13 +55,13 @@
     return cardNode;
   };
 
-  var getObjectsList = function (arr) {
+  var getObjectsList = function (objects) {
     var fragment = document.createDocumentFragment();
     var objectTemplate = document.querySelector('#pin').content;
-    arr.forEach(function (item) {
+    objects.forEach(function (item) {
       var objectNode = objectTemplate.cloneNode(true);
-      var coordX = item.location.x - (window.pin.PinSetting.PIN_WIDTH / 2);
-      var coordY = item.location.y - window.pin.PinSetting.PIN_HEIGHT;
+      var coordX = item.location.x - (window.pin.setting.PIN_WIDTH / 2);
+      var coordY = item.location.y - window.pin.setting.PIN_HEIGHT;
       var pinElement = objectNode.querySelector('.map__pin');
       pinElement.style.left = coordX + 'px';
       pinElement.style.top = coordY + 'px';
@@ -71,13 +71,17 @@
       pinElement.addEventListener('click', function () {
         window.map.removeCard();
         window.map.filterBlock.before(getCardModal(item));
+        window.pin.clearActiveStatus();
+        pinElement.classList.add('map__pin--active');
         hideCurrentCard();
       });
-      pinElement.addEventListener('keydown', function (evt) {
-        if (evt.keyCode === window.util.KeyCode.ENTER) {
-          evt.preventDefault();
-          window.map.mapBlock.querySelector('.map__card').remove();
+      pinElement.addEventListener('keydown', function (pinEvt) {
+        if (pinEvt.keyCode === window.util.KeyCode.ENTER) {
+          pinEvt.preventDefault();
+          window.map.removeCard();
           window.map.filterBlock.before(getCardModal(item));
+          window.pin.clearActiveStatus();
+          pinElement.classList.add('map__pin--active');
           hideCurrentCard();
         }
       });
@@ -86,25 +90,26 @@
     return fragment;
   };
 
-  var clickCloseCardHandler = function (evt) {
-    evt.preventDefault();
-    evt.target.parentElement.classList.add('hidden');
+  var clickCloseCardHandler = function (clickEvt) {
+    clickEvt.preventDefault();
+    clickEvt.target.parentElement.classList.add('hidden');
+    document.removeEventListener('keydown', tabEscCardHandler);
   };
 
-  var tabEscCardHandler = function (evt) {
-    var cardMapBlock = window.map.mapBlock.querySelector('.map__card');
-    if (evt.keyCode === window.util.KeyCode.ESC) {
-      evt.preventDefault();
-      evt.stopPropagation();
+  var tabEscCardHandler = function (tabEvt) {
+    var cardMapBlock = window.map.block.querySelector('.map__card');
+    if (tabEvt.keyCode === window.util.KeyCode.ESC) {
+      tabEvt.preventDefault();
+      tabEvt.stopPropagation();
       cardMapBlock.classList.add('hidden');
-      cardMapBlock.removeEventListener('keydown', tabEscCardHandler);
+      document.removeEventListener('keydown', tabEscCardHandler);
     }
   };
 
   var hideCurrentCard = function () {
-    if (window.map.mapBlock.querySelector('.map__card')) {
-      var cardMapBlock = window.map.mapBlock.querySelector('.map__card');
-      cardMapBlock.addEventListener('keydown', tabEscCardHandler);
+    var cardMapBlock = window.map.block.querySelector('.map__card');
+    if (window.map.block.querySelector('.map__card')) {
+      document.addEventListener('keydown', tabEscCardHandler);
       var cardCloseMapBlock = cardMapBlock.querySelector('.popup__close');
       cardCloseMapBlock.addEventListener('click', clickCloseCardHandler);
     }
@@ -112,7 +117,7 @@
 
   window.card = {
     getObjectsList: getObjectsList,
-    hideCurrentCard: hideCurrentCard,
-    getCardModal: getCardModal
+    hideCurrent: hideCurrentCard,
+    getModal: getCardModal
   };
 })();

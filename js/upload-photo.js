@@ -59,10 +59,10 @@
     var files = evt.target.files;
     if (files) {
       if (evt.target.id === 'avatar') {
-        updatePhoto(files, window.form.adFormAvatarPreview);
+        updatePhoto(files, window.form.avatarPreviewElement);
       }
       if (evt.target.id === 'images') {
-        updatePhoto(files, window.form.adFormPhotoPreview);
+        updatePhoto(files, window.form.photoPreviewElement);
       }
     }
   };
