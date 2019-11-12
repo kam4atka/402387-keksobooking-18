@@ -59,19 +59,24 @@
   };
 
   var filterFeatures = function (item) {
-    var result = true;
-    inputs.forEach(function (input) {
-      if (input.checked) {
-        result = item.offer.features.some(function (feature) {
-          return feature === input.value;
-        });
-      }
+    var checkedInputs = Array.from(inputs).filter(function (checkedInput) {
+      return checkedInput.checked;
     });
-    return result;
+    return checkedInputs.every(function (input) {
+      return item.offer.features.some(function (feature) {
+        return feature === input.value;
+      });
+    });
   };
 
   var update = function (objects) {
-    objects = objects.filter(filterType).filter(filterPrice).filter(filterRoom).filter(filterGuest).filter(filterFeatures);
+    objects = objects.filter(function (item) {
+      return filterType(item) &&
+      filterPrice(item) &&
+      filterRoom(item) &&
+      filterGuest(item) &&
+      filterFeatures(item);
+    });
 
     if (objects.length > 0) {
       window.map.pinBlock.appendChild(window.card.getObjectsList(objects.slice(0, 5)));
